@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project basedir="." default="rpm" name="VT-VKx">
+	<taskdef name="redline" classname="org.redline_rpm.RedlineTask">
+		<classpath>
+			<fileset dir="./extern/redline-rpm">
+				<include name="redline.jar" />
+			</fileset>
+		</classpath>
+	</taskdef>
+
+	<property name="prefix.dir" value="/opt/ext/tac" /> <!--  do not change -->
+	<property name="taName" value="tdsx" />
+	<property name="taPath" value="${prefix.dir}/${taName}" />
+	<property name="rpmName" value="sX-MkjtrDriver-MkjtricActuation"/>
+	<target name="rpm">
+		<!-- delete old rpm's -->
+		<delete>
+			<fileset dir="." includes="${rpmName}*.rpm" />
+		</delete>
+		<redline group="Mkjtricactuation" name="${rpmName}" version="0.4.0" release="0" architecture="X86_64" vendor="Siemens AG" destination="." preinstallscript="preinstall.sh" postinstallscript="postinstall.sh" preuninstallscript="preuninstall.sh" postuninstallscript="postuninstall.sh">
+			<zipfileset prefix="${taPath}" file="./start.sh" filemode="500" />
+			<zipfileset prefix="${taPath}/cfg/" file="cfg/**" />
+			<zipfileset prefix="${taPath}/log/" file="log/**" />
+			<zipfileset prefix="${taPath}/httpd/" file="httpd/**" />
+
+			<zipfileset prefix="${taPath}/data/storage" file="../build/MkjtrDriverSx/data/storage/*" />
+
+			<zipfileset prefix="${taPath}/bin/" file="../build/MkjtrDriverSx/bin/tdsx" filemode="500" />
+			<zipfileset prefix="${taPath}/lib/" file="../build/MkjtrCommon/lib/*" filemode="500" />
+			<zipfileset prefix="${taPath}/lib/" file="../build/MkjtrCore/lib/*" filemode="500" />
+			<zipfileset prefix="${taPath}/lib/" file="../build/Logger/lib/*" filemode="500" />
+			<zipfileset prefix="${taPath}/lib/" file="../build/ScatsModem/lib/*" filemode="500" />
+            <zipfileset prefix="${taPath}/lib/" file="../build/HhtGateway/lib/*" filemode="500" />
+			<zipfileset prefix="${taPath}/lib/" file="lib/libtackernel.so.0" filemode="500" />
+			<zipfileset prefix="${taPath}/lib/" file="extern/linux_hlc/lib/libevent.so" filemode="500" />
+		</redline>
+	</target>
+
+</project>

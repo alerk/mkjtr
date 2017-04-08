@@ -1,0 +1,48 @@
+// comment start
+// TC		-> keyword for test case	mandatory
+// 01		-> number of the test case	mandatory
+// optPara	-> keyword for parameter	optional, max 10
+// -		-> sign for parameter value	optional, max 10 
+// 10		-> parameter value		optional,
+
+
+// TC  01		// minimum specification of test case 1
+// TC  01 optPara	// specification of test case 1 with optPara1 +10
+// TC  01 optPara - 10	// specification of test case 1 with optPara1 -10
+
+// ------------------------------
+
+// TC  01	     // demand stage 2, start of stage transition when IT-frame begins at tx 1190 (1070 + 0) 	-> start at tx 0
+// TC  01 optPara 10 // demand stage 2, latest point in time for start of stage transition when IT-frame begins (1070 + 10)
+// TC  01 optPara 20 // demand stage 2, too late for start of stage transition when IT-frame begins (1070 + 20)
+
+// TC  02	       // demand stage 2, latest point in time for start of stage transition before IT frame ends at tx 90 (70 + 0)
+// TC  02 optPara 10   // demand stage 2, too late for start of stage transition before IT-frame ends (70 + 10)
+// TC  02 optPara - 10 // demand stage 2, start of stage transition 1 second before IT-frame ends (70 - 10)
+
+// TC  03	     // demand stage 3, start of stage transition when IT-frame begins at tx 230 (210 + 0)	-> start at tx 240
+// TC  03 optPara 10 // demand stage 3, latest point in time for start of stage transition when IT-frame begins (210 + 10)
+// TC  03 optPara 20 // demand stage 3, too late for start of stage transition when IT-frame begins (210 + 20)
+
+// TC  04	     // demand stage 3, latest point in time for start of stage transition before IT frame ends at tx 290 (270 + 0)
+// TC  04 optPara 10 // demand stage 3, too late for start of stage transition before IT-frame ends (270 + 10)
+// TC  04 optPara - 10 // demand stage 3, start of stage transition 1 second before IT-frame ends (270 - 10)
+
+// TC  05	     // demand stage 4, start of stage transition when IT-frame begins at tx 530 (510 + 0)	-> start at tx 540
+// TC  05 optPara 10 // demand stage 4, latest point in time for start of stage transition when IT-frame begins at tx 540 (510 + 10)
+// TC  05 optPara 20 // demand stage 4, too late for start of stage transition when IT-frame begins at tx 540 (510 + 20)
+
+// TC  06	     // demand stage 4, latest point in time for start of stage transition before IT frame ends at tx 590 (570 + 0)
+// TC  06 optPara 10 // demand stage 4, too late for start of stage transition before IT-frame ends (570 + 10)
+// TC  06 optPara - 10 // demand stage 4, start of stage transition 1 second before IT-frame ends (570 - 10)
+
+// TC  07	     // demand stage 2, 3 and 4, expected result: stage 3, 4, 1, 2
+
+// TC  10	     // demand stage 2 and 3 earliest point in time
+// TC  11	     // demand stage 2 and 3 latest point in time
+
+// TC  12	     // demand stage 3 and 4 earliest point in time
+// TC  13	     // demand stage 3 and 4 latest point in time
+
+// TC  14	     // demand stage 2, 3 and 4 earliest point in time
+TC  15	     // demand stage 2, 3 and 4 latest point in time

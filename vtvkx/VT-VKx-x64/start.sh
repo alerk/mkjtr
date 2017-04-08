@@ -1,0 +1,200 @@
+#!/bin/sh
+
+# start traffic actuation control process named "tdsx"
+
+# return values
+#	0	stop was successful or process was already stopped
+#	10 	ERROR unknown argument
+#	11	ERROR Start $BinName failed !!!
+#	12	ERROR C10 application $VmName already running
+#	15	ERROR regular stop failed
+#	16	ERROR abort failed
+
+usage ()
+{
+cat << EOF
+usage: $0  start  | stop | restart | status |  disable | enable
+
+This script starts and stops the prototype of "tdsx" in different modes
+
+OPTIONS:
+   -? Show this message
+
+   start        normal start
+   stop         switch off intersection controller and stop pdmx 
+   restart
+   status       shows if process is running and its pid
+   disable      dont start pdmx even after reboot. Do NOT use in productive environment
+   enable       undoes the "disable" and performs a start
+
+EOF
+}
+
+echo "$(date -Iseconds) $0 $* $PATH"  >> /tmp/tdsx_ctrl.log
+APPLICATION_ROOT="/opt/ext/tac/tdsx"
+#APPLICATION_ROOT_SIEMENS="/opt/jappl"
+DO_NOT_START="${APPLICATION_ROOT}/doNotStart_tdsx"
+
+while getopts s:r:? option
+do
+case $option in
+	s) BinName="${OPTARG}"; shift 2;;
+	r) APPLICATION_ROOT="${OPTARG}"; shift 2;;
+        '?'|h) usage; exit 0 ;;
+	--)#End Options
+	;;
+esac
+done
+
+export LD_LIBRARY_PATH=${APPLICATION_ROOT}/lib:${LD_LIBRARY_PATH}
+# uncomment to activate malloc trace
+# export MALLOC_TRACE=log/pdmx_malloc.trace
+
+APPLICATION_BIN=${APPLICATION_ROOT}/bin
+#DEVOUT=${APPLICATION_ROOT}/log/pdmx.log
+#DEVOUT=/dev/console
+#DEVOUT=/dev/null   
+DEVOUT=log/tdsx_stdout
+DEVERR=log/tdsx_stderr
+DEVOUTOLD=${DEVOUT}.old
+DEVERROLD=${DEVERR}.old
+#BinName=tacKernelDemo
+BinName=tdsx
+TACode=/opt/jappl/data/config/inventory/tdsx.cod
+
+# add link to binary passed with configuration
+if [ -e $TACode ]
+then
+	[ -x $TACode ] || chmod +x $TACode
+	[ -e ${APPLICATION_BIN}/${BinName} ] || ln -s $TACode ${APPLICATION_BIN}/${BinName}
+fi
+
+# set some start parameters
+#p_AppStarterCfg="StartTAConOMC.xml";      
+PidFileName="/var/run/ext_tdsx.pid";      
+
+
+pid=`pidof $BinName`
+
+#echo $1 $BinName
+
+
+case "${1}" in
+  start)
+    if [ -f $DO_NOT_START ]
+    then
+                echo "start of pdmx is disabled. Enable with \"$0 enable\" "
+    else
+	if [ "X$pid" != "X" ]
+	then
+		RETVAL=12
+		echo "ERROR sX application $BinName already running"
+	else  	
+	trap "" 1
+	(
+		echo "INFO Starting $BinName application"
+		cd ${APPLICATION_ROOT}
+		mv ${DEVOUT} ${DEVOUTOLD}
+		mv ${DEVERR} ${DEVERROLD}
+		/usr/bin/nohup  ${APPLICATION_BIN}/${BinName} -N 2>${DEVERR}  > ${DEVOUT}  &     
+	)
+		sleep 1
+		pid=$(pidof $BinName)
+		echo $pid > $PidFileName
+		if [ "X$pid" !=  "X" ]
+		then
+		        RETVAL=0;
+			echo "INFO $BinName running with pid=${pid}"
+		else
+		        RETVAL=11;
+		        echo "ERROR Start $BinName failed !!!"
+		fi        
+	fi
+      fi
+      ;;
+
+  stop)
+  (
+  	#echo "INFO Stopping sX application"
+	PID=`pidof $BinName`
+	if [ "X$PID" !=  "X" ]
+	then
+  		 echo -n "INFO Stopping sX application $BinName (PID=$pid) "
+	  	 killall $BinName 2>&1 >/dev/null
+                 RETVAL=0
+                 CNT=10
+                 while [ $CNT -gt 0 ]
+                 do
+                   PID=`pidof $BinName`
+                   if [ "X$PID" = "X" ]
+                   then
+                     echo "$BinName stopped"
+                     exit 0;
+                   fi
+                   sleep 1
+                   echo -n "."
+                   CNT=`expr $CNT -  1`
+                done
+		RETVAL=15  # regular stop failed 
+  		                                                                                                                                                   
+  	else
+  		RETVAL=0
+  		echo "INFO sX application $BinName already stopped"
+  	fi
+	)
+	;;
+
+   restart)
+	$0 stop
+	sleep 2
+	$0 start
+	;;
+	
+   abort)
+   # try a regular stop first
+   	$0 stop  	
+   	RET=$?
+   	echo RET=$RET
+   	if [ $RET != "0" ]
+   	 then
+   	 echo INFO kill -9 $BinName
+   	 killall -9 $BinName
+   	fi
+   	;;
+
+
+     status)
+          PID=`pidof $BinName`
+          if [ "X$PID" = "X" ]
+          then
+             echo "application $BinName is stopped"
+             exit 0;
+          else
+             echo "application $BinName is running with pid=$PID"
+             exit 0;
+          fi
+  ;;
+
+   		
+    enable)
+        echo WARNING start of pdmx is enabled permanently again
+        rm -f $DO_NOT_START
+        $0 start
+        ;;
+    disable)
+        echo WARNING start of pdmx is disabled permanently. Run this script with option enable to enable it again
+        touch $DO_NOT_START
+        $0 stop
+        ;;
+
+   *)
+   	RETVAL=10
+   	echo "ERROR unknown argument $1"	
+   ;;
+   
+esac
+
+
+
+#echo RETVAL=$RETVAL
+exit $RETVAL

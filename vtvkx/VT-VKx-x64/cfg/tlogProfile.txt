@@ -1,0 +1,29 @@
+#tlog profile 
+[GENERAL_SETTINGS_SECTION]
+# if logging has been started in separate thread, a new profile for reading
+# is checked every CYCLIC_PROFILE_CHECK_TIME in seconds
+
+CYCLIC_PROFILE_CHECK_TIME=300
+
+# specifies if single line output is supplied for std i/o
+# (0 = false, 1 = true)
+
+STDIO_SINGLE_LINE=0
+
+# specifies if short line (only timestamp and logging test) is supported
+# for file i/o (0 = false, 1 = true)
+
+FILE_SHORT_LINE=0
+
+# specifies if high precision time is used instead of normal timestamp
+# (0 = false, 1 = true)
+
+HIGH_PRECISION_TIME=0
+
+[DEFAULT_SETTINGS_SECTION]
+DEFAULT_LOGGING_FILE_NAME=PDMx.log
+DEFAULT_OUTPUT_CHANNEL=FILE
+DEFAULT_MAX_LOGGING_FILE_SIZE=2097152
+[SUBSCRIBER_SECTION]
+PDMx=5
+Detectors.cpp=4

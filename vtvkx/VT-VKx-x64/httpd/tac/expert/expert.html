@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<center>
+<p>
+<br>
+<br>
+</p>
+<p>
+<script language="JavaScript">
+
+  var lang = getURLParameter("locale"); 
+  
+  if(lang=="de")
+  {
+    document.write('<font size="20" color="BLUE"> PDM auf sX</font>' );
+    document.write('<br><br>' );
+    document.write('<a href="' + window.location.protocol + '//' + window.location.hostname + ':8014" title="Aufruf der Service GUI"> --> JMX</a> ' );
+    document.write('<br><br>' );
+    document.write('<a href="../../monitor/pdmx/1f_Fehlerhandbuch_C800_C900_A012_dt.pdf" title="Handbuch anzeigen">Fehlerhandbuch </a> ');
+  }
+  else
+  {
+    document.write('<font size="20" color="BLUE"> PDM on sX</font>' );
+    document.write('<br><br>' );
+    document.write('<a href="' + window.location.protocol + '//' + window.location.hostname + ':8014" title="Call Service GUI"> --> JMX</a> ' );
+    document.write('<br><br>' );
+    document.write('<a href="../../monitor/pdmx/1f_Fehlerhandbuch_C800_C900_A012_en.pdf" title="show Error Handling Manual">Manual </a> ');
+  }
+  
+  function getURLParameter(name) 
+  {
+    return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null;
+  }
+
+</script>
+</p>
+</center>
+
+</html>
+
