@@ -1,0 +1,14 @@
+1. Nguyen Xuan Quyen
+2. #ignore
+3. #ignore
+4. Change log:
+- Initializing project
+- Add driver
+- Add logger: TO BE COPIED
+- Add vtvkx: contained VT-VKx (64)
+- TODO: Write Makefile for project
+  + Compile driver
+  + Compile logger
+  + Copy libs to lib directory
+  + Copy driver executable file to output folder
+
